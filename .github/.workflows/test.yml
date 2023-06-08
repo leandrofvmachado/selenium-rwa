@@ -17,6 +17,9 @@ jobs:
         with:
           python-version: "3.9.6"
 
+      - name: Docker
+        run: make docker/start 
+
       - name: E2E Tests
         run: make test/e2e    
 
