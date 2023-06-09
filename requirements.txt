@@ -1,0 +1,12 @@
+pytest
+selenium
+py
+pytest-html
+pytest-sugar
+pytest-xdist
+requests
+black
+unimport
+isort
+pytest-repeat
+webdriver-manager

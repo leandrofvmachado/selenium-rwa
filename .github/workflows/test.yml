@@ -3,7 +3,7 @@ name: Test
 on: 
   push:
     branches-ignore: [master]
-  pull-request:
+  pull_request:
     branches-ignore: [master]
   
 jobs:
@@ -15,7 +15,10 @@ jobs:
 
       - uses: actions/setup-python@v2
         with:
-          python-version: "3.9.6"
+          python-version: "3.11.4"
+
+      - name: Docker
+        run: make docker/start 
 
       - name: E2E Tests
         run: make test/e2e    

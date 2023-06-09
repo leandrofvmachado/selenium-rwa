@@ -1,5 +1,5 @@
-from py.xml import html
 from _pytest.config import hookimpl
+from py.xml import html
 
 
 def pytest_html_results_table_header(cells):
