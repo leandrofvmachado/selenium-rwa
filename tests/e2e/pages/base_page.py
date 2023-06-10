@@ -4,6 +4,7 @@ from selenium.webdriver.support.expected_conditions import (
     invisibility_of_element_located,
     presence_of_element_located,
     visibility_of_element_located,
+    url_changes
 )
 from selenium.webdriver.support.ui import WebDriverWait
 
@@ -50,3 +51,12 @@ class BasePage:
 
     def get_url(self, url):
         self.driver.get(url)
+
+    
+    def check_url(self, url):
+        try:
+            self.wait.until(url_changes(url))
+            return True
+        except:
+            return False
+
