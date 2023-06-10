@@ -9,8 +9,6 @@ from faker import Faker
 import logging
 from selenium.webdriver.remote.remote_connection import LOGGER
 
-from e2e.pages.base_page import BasePage
-
 LOGGER.setLevel(logging.WARNING)
 logging.getLogger('faker.factory').setLevel(logging.ERROR)
 fake = Faker()
