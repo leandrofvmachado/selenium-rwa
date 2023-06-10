@@ -18,27 +18,16 @@ fake = Faker()
 @pytest.fixture(autouse=True, scope="session")
 def driver():
     chrome_options = Options()
-    # chrome_options.add_argument("--headless")
+    chrome_options.add_argument("--headless")
     driver = webdriver.Chrome(
         service=ChromeService(ChromeDriverManager().install()), options=chrome_options
     )
     yield driver
     driver.quit()
-
-        # options = Options()
-    # options.add_argument('--no-sandbox')
-    # options.add_argument('--disable-dev-shm-usage')
-
-    # # Set up the webdriver connection
-    # webdriver_host = "http://localhost:4444/wd/hub"
-    # driver = Remote(command_executor=webdriver_host, keep_alive=True, file_detector=None, options=options)
-
-    # yield driver
-    # driver.quit()
-
-@pytest.fixture
+    
+@pytest.fixture(autouse=True, scope='session')
 def url():
-    return "http://172.23.80.1:3000"
+    pytest.url = "http://localhost:3000"
 
 
 def create_signup_data():
