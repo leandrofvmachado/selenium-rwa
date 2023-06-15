@@ -10,3 +10,4 @@ unimport
 isort
 pytest-repeat
 webdriver-manager
+faker
