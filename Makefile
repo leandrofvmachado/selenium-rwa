@@ -6,6 +6,3 @@ code/format:
 	unimport -r .
 	isort .
 	black .
-
-docker/start:
-	docker-compose up -d
