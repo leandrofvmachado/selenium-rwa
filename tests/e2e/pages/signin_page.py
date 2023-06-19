@@ -1,8 +1,8 @@
 import pytest
-from selenium.webdriver.common.by import By
-
 from e2e.pages.base_page import BasePage
 from e2e.pages.home_page import HomePage
+from selenium.webdriver.common.by import By
+
 
 class SignInPage(BasePage):
     """A class to represent the SignIn Page"""
@@ -16,12 +16,14 @@ class SignInPage(BasePage):
     login_button_locator = (By.CSS_SELECTOR, '[data-test="signin-submit"]')
     signup_button_locator = (By.CSS_SELECTOR, '[data-test="signup"]')
     signup_link_locator = (By.CSS_SELECTOR, '[data-test="signup"]')
-    
 
-    #User journey methods
+    # User journey methods
     def is_in_signin_page(self):
-        return self.check_url(f'{pytest.url}/signin')
-    
+        return self.check_url(f"{pytest.url}/signin")
+
+    def go_to_signin_page(self):
+        return self.get_url(f"{pytest.url}/signin")
+
     def go_to_signup_page(self):
         self.click_on(self.signup_link_locator)
 
