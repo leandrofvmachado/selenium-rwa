@@ -1,40 +1,59 @@
-from _pytest.config import hookimpl
-from py.xml import html
+import logging
+import time
+
 import pytest
+from _pytest.config import hookimpl
+from faker import Faker
+from py.xml import html
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service as ChromeService
-from webdriver_manager.chrome import ChromeDriverManager
-from faker import Faker
-import logging
 from selenium.webdriver.remote.remote_connection import LOGGER
+from webdriver_manager.chrome import ChromeDriverManager
 
 LOGGER.setLevel(logging.WARNING)
-logging.getLogger('faker.factory').setLevel(logging.ERROR)
+logging.getLogger("faker.factory").setLevel(logging.ERROR)
 fake = Faker()
 
-@pytest.fixture(autouse=True, scope="session")
+
+@pytest.fixture(autouse=True, scope="function")
 def driver():
     chrome_options = Options()
     chrome_options.add_argument("--headless")
+    chrome_options.add_argument("--start-maximized")
     driver = webdriver.Chrome(
         service=ChromeService(ChromeDriverManager().install()), options=chrome_options
     )
     yield driver
     driver.quit()
-    
-@pytest.fixture(autouse=True, scope='session')
+
+
+@pytest.fixture(autouse=True, scope="session")
 def url():
     pytest.url = "http://localhost:3000"
 
 
+def is_balance_adjusted(old_balance, new_balance, amount, home_page):
+    max_time = 10
+    iterator = 0
+    while old_balance != new_balance + amount:
+        time.sleep(1)
+        iterator += 1
+        new_balance = home_page.get_balance()
+        if iterator > max_time:
+            return False
+
+    return True
+
+
 def create_signup_data():
     return {
-        "first_name": fake.lexify(text='?????'),
-        "password": fake.bothify(text='??##??##??##'),
-        "last_name": fake.lexify(text='?????'),
-        "username": fake.lexify(text='?????'),
+        "first_name": fake.lexify(text="?????"),
+        "password": fake.bothify(text="??##??##??##"),
+        "last_name": fake.lexify(text="?????"),
+        "username": fake.lexify(text="?????"),
     }
+
 
 def pytest_html_results_table_header(cells):
     del cells[1]
