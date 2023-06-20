@@ -103,15 +103,23 @@ class BasePage:
                 f"Element with locator {parent_locator} was not found within timeout period of 10 seconds"
             )
 
+    def find_element_in_element(self, parent_element, child_locator):
+        try:
+            return parent_element.find_element(By.XPATH, child_locator)
+        except TimeoutException:
+            print(
+                f"Element with locator {child_locator} was not found within timeout period of 10 seconds"
+            )
+
     def wait_until_list_is_loaded_correctly(
         self, user_list_locator, child_user_list_locator, receiver_email
     ):
         """
         This code snippet defines a method that waits for a list to be loaded correctly. It expects length to be one and
         the email(or any text) appears in the list element.
-        It takes in a user list locator, a child user list locator, and a receiver email as arguments. 
-        It sets a maximum time of 10 seconds and iterates through the list of child elements until it finds the receiver email(it can be any text), 
-        or until the iterator reaches the maximum time. If the receiver email is not found within the 
+        It takes in a user list locator, a child user list locator, and a receiver email as arguments.
+        It sets a maximum time of 10 seconds and iterates through the list of child elements until it finds the receiver email(it can be any text),
+        or until the iterator reaches the maximum time. If the receiver email is not found within the
         allotted time, a TimeoutError is raised.
         """
         max_time = 10
