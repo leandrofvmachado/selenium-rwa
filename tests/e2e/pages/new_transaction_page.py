@@ -53,5 +53,21 @@ class NewTransactionPage(BasePage):
         # TODO go in mine tab and check the transaction is there
         return home_page
 
+    def place_a_request(self, receiver_name, note, amount=50):
+        self.find_element(self.search_input_locator).send_keys(receiver_name)
+        self.wait_until_list_is_loaded_correctly(
+            self.user_list_locator, self.child_user_list_locator, receiver_name
+        )
+        self.find_element(self.user_list_locator).click()
+        self.find_element(self.amount_input_locator).send_keys(amount)
+        self.find_element(self.add_a_note_input_locator).send_keys(note)
+        self.find_element(self.request_button_locator).click()
+        assert self.find_element(
+            (By.XPATH, "//*[contains(text(), '{}')]".format(f"Requested"))
+        )
+        self.find_element(self.return_to_transactions_button_locator).click()
+        home_page = HomePage(self.driver)
+        return home_page
+
     def is_in_new_transaction_page(self):
         self.check_url(pytest.url + "/transaction/new")

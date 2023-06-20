@@ -17,12 +17,45 @@ def new_transaction_page(driver):
     return new_transaction_page
 
 
-def test_create_new_transaction(new_transaction_page, home_page):
+def test_create_new_payment_transaction(new_transaction_page, home_page):
     amount = 50
     old_balance = home_page.get_balance()
+    receiver = "Ibrahim Dickens"
 
-    home_page = new_transaction_page.make_a_transaction("Ibrahim Dickens", amount)
+    home_page = new_transaction_page.make_a_transaction(receiver, amount)
     new_balance = home_page.get_balance()
-    
+
+    (
+        sender_on_screen,
+        receiver_on_screen,
+        action_on_screen,
+        amount_on_screen,
+    ) = home_page.get_transaction_info_on_personal_list()
     assert home_page.is_in_home_page()
     assert is_balance_adjusted(old_balance, new_balance, Decimal(amount), home_page)
+
+    assert home_page.is_in_home_page()
+    assert sender_on_screen == "Edgar Johns"
+    assert receiver_on_screen == receiver
+    assert action_on_screen == "paid"
+    assert amount_on_screen == f"-${amount}.00"
+
+
+def test_create_new_request_transaction(new_transaction_page):
+    amount = 50
+    receiver = "Ibrahim Dickens"
+    note = "selenium_automation"
+
+    home_page = new_transaction_page.place_a_request(receiver, note, amount)
+    (
+        sender_on_screen,
+        receiver_on_screen,
+        action_on_screen,
+        amount_on_screen,
+    ) = home_page.get_transaction_info_on_personal_list()
+
+    assert home_page.is_in_home_page()
+    assert sender_on_screen == "Edgar Johns"
+    assert receiver_on_screen == receiver
+    assert action_on_screen == "requested"
+    assert amount_on_screen == f"+${amount}.00"
