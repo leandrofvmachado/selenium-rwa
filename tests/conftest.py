@@ -3,6 +3,7 @@ import time
 
 import pytest
 from _pytest.config import hookimpl
+from e2e.pages.signin_page import SignInPage
 from faker import Faker
 from py.xml import html
 from selenium import webdriver
@@ -31,6 +32,14 @@ def driver():
 @pytest.fixture(autouse=True, scope="session")
 def url():
     pytest.url = "http://localhost:3000"
+
+
+@pytest.fixture()
+def logged_in_home_page(driver):
+    signin_page = SignInPage(driver)
+    signin_page.go_to_signin_page()
+    home_page = signin_page.login("Katharina_Bernier", "s3cret")
+    return home_page
 
 
 def is_balance_adjusted(old_balance, new_balance, amount, home_page):
