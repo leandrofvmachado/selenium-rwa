@@ -54,8 +54,21 @@ class HomePage(BasePage):
     def go_to_new_transaction(self):
         self.find_element(self.new_transaction_locator).click()
 
-    def get_transaction_info_on_personal_list(self):
+    def go_to_home_page(self):
+        self.find_element(self.title_locator).click()
+
+    def go_to_personal_transactions(self):
         self.find_element(self.personal_transactions_locator).click()
+
+    def access_last_personal_transaction(self):
+        self.go_to_personal_transactions()
+        personal_transactions_list = self.get_child_elements(
+            self.transaction_list_locator, self.transaction_list_elements_xpath
+        )
+        personal_transactions_list[0].click()
+
+    def get_transaction_info_on_personal_list(self):
+        self.go_to_personal_transactions()
         personal_transactions_list = self.get_child_elements(
             self.transaction_list_locator, self.transaction_list_elements_xpath
         )

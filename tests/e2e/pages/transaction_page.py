@@ -4,7 +4,7 @@ from pages.home_page import HomePage
 from selenium.webdriver.common.by import By
 
 
-class NewTransactionPage(BasePage):
+class TransactionPage(BasePage):
     """A class to represent the New/transaction Page"""
 
     def __init__(self, driver):
@@ -33,6 +33,30 @@ class NewTransactionPage(BasePage):
         '[data-test="new-transaction-create-another-transaction"]',
     )
     balance_locator = (By.CSS_SELECTOR, '[data-test="sidenav-user-balance"]')
+    accept_request_locator = (
+        By.XPATH,
+        '//button[starts-with(@data-test, "transaction-accept-request")]',
+    )
+    transaction_sender_locator = (
+        By.XPATH,
+        '//span[starts-with(@data-test, "transaction-sender")]',
+    )
+    transaction_action_locator = (
+        By.XPATH,
+        '//*[starts-with(@data-test, "transaction-action")]',
+    )
+    transaction_receiver_locator = (
+        By.XPATH,
+        '//span[starts-with(@data-test, "transaction-receiver")]',
+    )
+    transaction_amount_locator = (
+        By.XPATH,
+        '//*[starts-with(@data-test, "transaction-amount")]',
+    )
+    transaction_description_locator = (
+        By.XPATH,
+        '//*[starts-with(@data-test, "transaction-description")]',
+    )
 
     # paid 50 for a,
     # User journey methods
@@ -71,3 +95,17 @@ class NewTransactionPage(BasePage):
 
     def is_in_new_transaction_page(self):
         self.check_url(pytest.url + "/transaction/new")
+
+    def accept_a_request(self):
+        assert (
+            self.find_element(self.transaction_action_locator).text == "requested"
+        ), "Transaction is not a payment request"
+        self.find_element(self.accept_request_locator).click()
+
+    def get_transaction_info(self):
+        sender = self.find_element(self.transaction_sender_locator).text
+        receiver = self.find_element(self.transaction_receiver_locator).text
+        action = self.find_element(self.transaction_action_locator).text
+        amount = self.find_element(self.transaction_amount_locator).text
+        description = self.find_element(self.transaction_description_locator).text
+        return sender, receiver, action, amount, description
