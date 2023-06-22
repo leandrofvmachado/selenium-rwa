@@ -100,7 +100,7 @@ class TransactionPage(BasePage):
     def is_in_new_transaction_page(self):
         self.check_url(pytest.url + "/transaction/new")
 
-    def take_action_on_request(self, action): 
+    def take_action_on_request(self, action):
         assert (
             self.find_element(self.transaction_action_locator).text == "requested"
         ), "Transaction is not a payment request"
@@ -110,10 +110,10 @@ class TransactionPage(BasePage):
             self.find_element(self.reject_request_locator).click()
 
     def reject_a_request(self):
-        self.take_action_on_request('reject')
+        self.take_action_on_request("reject")
 
     def accept_a_request(self):
-        self.take_action_on_request('accept')
+        self.take_action_on_request("accept")
 
     def get_transaction_info(self):
         sender = self.find_element(self.transaction_sender_locator).text

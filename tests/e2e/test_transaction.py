@@ -134,6 +134,7 @@ def test_accept_a_request(home_page, transaction_page, payment_request_requested
     assert amount_on_screen == f"+${amount_requested}.00"
     assert description_on_screen == description_requested
 
+
 def test_deny_request(home_page, transaction_page, payment_request_requested):
     home_page.access_last_personal_transaction()
     transaction_page.reject_a_request()

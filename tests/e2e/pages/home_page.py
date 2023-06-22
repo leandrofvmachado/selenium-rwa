@@ -1,6 +1,7 @@
 from decimal import Decimal
 
 import pytest
+from e2e.pages.bank_account import BankAccountPage
 from e2e.pages.base_page import BasePage
 from selenium.webdriver.common.by import By
 
@@ -20,6 +21,7 @@ class HomePage(BasePage):
     # Locators for page elements
     title_locator = (By.CSS_SELECTOR, '[data-test="app-name-logo"]')
     balance_locator = (By.CSS_SELECTOR, '[data-test="sidenav-user-balance"]')
+    bank_account_locator = (By.CSS_SELECTOR, '[data-test="sidenav-bankaccounts"]')
     new_transaction_locator = (By.CSS_SELECTOR, '[data-test="nav-top-new-transaction"]')
     personal_transactions_locator = (By.CSS_SELECTOR, '[data-test="nav-personal-tab"]')
     transaction_list_locator = (By.CSS_SELECTOR, '[data-test="transaction-list"]')
@@ -86,3 +88,7 @@ class HomePage(BasePage):
             personal_transactions_list[0], self.transaction_list_element_amount_xpath
         ).text
         return sender_on_screen, receiver_on_screen, action_on_screen, amount_on_screen
+
+    def go_to_bank_accounts(self):
+        self.find_element(self.bank_account_locator).click()
+        return BankAccountPage(self.driver)
