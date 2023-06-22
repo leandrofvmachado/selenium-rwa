@@ -95,8 +95,8 @@ def test_create_new_request_transaction(new_transaction_page, transaction_page):
     assert description_on_screen == note
 
 
-def test_check_request_paid(home_page, payment_request_charged):
-    home_page.go_to_home_page()
+def test_check_request_paid(logged_in_home_page, payment_request_charged):
+    logged_in_home_page.go_to_home_page()
     (
         amount_requested,
         description_requested,
@@ -108,7 +108,7 @@ def test_check_request_paid(home_page, payment_request_charged):
         receiver_on_screen,
         action_on_screen,
         amount_on_screen,
-    ) = home_page.get_transaction_info_on_personal_list()
+    ) = logged_in_home_page.get_transaction_info_on_personal_list()
     assert action_on_screen == "charged"
     assert amount_on_screen == f"+${amount_requested}.00"
 
@@ -131,5 +131,28 @@ def test_accept_a_request(home_page, transaction_page, payment_request_requested
         description_on_screen,
     ) = transaction_page.get_transaction_info()
     assert action_on_screen == "charged"
+    assert amount_on_screen == f"+${amount_requested}.00"
+    assert description_on_screen == description_requested
+
+def test_deny_request(home_page, transaction_page, payment_request_requested):
+    home_page.access_last_personal_transaction()
+    transaction_page.reject_a_request()
+
+    (
+        amount_requested,
+        description_requested,
+        receiver_id_requested,
+        sender_id_requested,
+    ) = payment_request_requested
+
+    (
+        sender_on_screen,
+        receiver_on_screen,
+        action_on_screen,
+        amount_on_screen,
+        description_on_screen,
+    ) = transaction_page.get_transaction_info()
+
+    assert action_on_screen == "requested"
     assert amount_on_screen == f"+${amount_requested}.00"
     assert description_on_screen == description_requested
