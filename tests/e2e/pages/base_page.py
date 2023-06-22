@@ -79,10 +79,10 @@ class BasePage:
         except:
             return False
 
-    def get_child_elements(self, parent_locator, child_locator):
+    def get_child_elements(self, parent_locator, child_xpath):
         try:
             parent_element = self.find_element(parent_locator)
-            return parent_element.find_elements(By.XPATH, child_locator)
+            return parent_element.find_elements(By.XPATH, child_xpath)
         except TimeoutException:
             print(
                 f"Element with locator {parent_locator} was not found within timeout period of 10 seconds"
