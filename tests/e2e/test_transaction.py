@@ -15,6 +15,20 @@ def new_transaction_page(driver, logged_in_home_page):
 
 
 @pytest.fixture
+def payment_request_requested(user):
+    amount = 50
+    description = "selenium_automation"
+    receiver_id = "t45AiwidW"
+    sender_id = "24VniajY1y"
+
+    session = login("Giovanna74", "s3cret")
+    make_new_transaction(
+        session, amount, "request", description, receiver_id, sender_id
+    )
+    return amount, description, receiver_id, sender_id
+
+
+@pytest.fixture
 def payment_request_charged():
     amount = 50
     description = "selenium_automation"
@@ -27,20 +41,6 @@ def payment_request_charged():
     )
     session = login("Giovanna74", "s3cret")
     execute_transaction(session, "accepted", transaction_response["transaction"]["id"])
-    return amount, description, receiver_id, sender_id
-
-
-@pytest.fixture
-def payment_request_requested():
-    amount = 50
-    description = "selenium_automation"
-    receiver_id = "t45AiwidW"
-    sender_id = "24VniajY1y"
-
-    session = login("Giovanna74", "s3cret")
-    make_new_transaction(
-        session, amount, "request", description, receiver_id, sender_id
-    )
     return amount, description, receiver_id, sender_id
 
 

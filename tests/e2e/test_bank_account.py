@@ -1,12 +1,12 @@
 import pytest
 from e2e.helpers.api_request import create_new_bank_account, login
-from factory.bank_account import BankAccountFactory
+from factory.bank_account_factory import BankAccountFactory
 
 
 @pytest.fixture
 def bank_account_fixture():
     bank_account = BankAccountFactory()
-    account = bank_account.create_account()
+    account = bank_account.create_bank_account()
     return account
 
 

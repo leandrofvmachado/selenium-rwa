@@ -3,6 +3,7 @@ from decimal import Decimal
 import pytest
 from e2e.pages.bank_account import BankAccountPage
 from e2e.pages.base_page import BasePage
+from e2e.pages.notification_page import NotificationPage
 from selenium.webdriver.common.by import By
 
 
@@ -22,6 +23,7 @@ class HomePage(BasePage):
     title_locator = (By.CSS_SELECTOR, '[data-test="app-name-logo"]')
     balance_locator = (By.CSS_SELECTOR, '[data-test="sidenav-user-balance"]')
     bank_account_locator = (By.CSS_SELECTOR, '[data-test="sidenav-bankaccounts"]')
+    notifications_locator = (By.CSS_SELECTOR, '[data-test="sidenav-notifications"]')
     new_transaction_locator = (By.CSS_SELECTOR, '[data-test="nav-top-new-transaction"]')
     personal_transactions_locator = (By.CSS_SELECTOR, '[data-test="nav-personal-tab"]')
     transaction_list_locator = (By.CSS_SELECTOR, '[data-test="transaction-list"]')
@@ -39,6 +41,10 @@ class HomePage(BasePage):
     )
     transaction_list_element_amount_xpath = (
         '//*[starts-with(@data-test, "transaction-amount")]'
+    )
+    top_notifications_link_locator = (
+        By.CSS_SELECTOR,
+        '[data-test="nav-top-notifications-link"]',
     )
 
     # User journey methods
@@ -92,3 +98,11 @@ class HomePage(BasePage):
     def go_to_bank_accounts(self):
         self.find_element(self.bank_account_locator).click()
         return BankAccountPage(self.driver)
+
+    def go_to_notifications(self):
+        self.find_element(self.notifications_locator).click()
+        return NotificationPage(self.driver)
+
+    def get_number_of_notifications(self):
+        if self.is_in_home_page():
+            return int(self.find_element(self.top_notifications_link_locator).text)

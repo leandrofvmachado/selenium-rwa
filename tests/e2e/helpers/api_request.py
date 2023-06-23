@@ -1,7 +1,7 @@
 import json
 
 import requests
-from factory.bank_account import BankAccountFactory
+from factory.bank_account_factory import BankAccountFactory
 
 base_url = "http://localhost:3001"
 
@@ -14,6 +14,8 @@ def make_request(session, url, payload, request_type):
             response = session.post(
                 url, headers={"Content-Type": "application/json"}, data=payload
             )
+        elif session == None:
+            response = requests.post(url, data=payload)
         else:
             response = session.post(url, data=payload)
     elif request_type == "PUT":
@@ -41,7 +43,7 @@ def login(username, password):
         "password": password,
     }
 
-    response = make_request(session, f"{base_url}/login", login_payload, "POST")
+    make_request(session, f"{base_url}/login", login_payload, "POST")
     return session
 
 
@@ -95,3 +97,11 @@ def create_new_bank_account(session, user_id):
     make_request(session, f"{base_url}/graphql", json.dumps(mutation), "POST")
 
     return bank_account
+
+
+def signup(user):
+    if not user:
+        raise ValueError("User array is empty")
+
+    response = make_request(None, f"{base_url}/users", user, "POST")
+    return response.json()
