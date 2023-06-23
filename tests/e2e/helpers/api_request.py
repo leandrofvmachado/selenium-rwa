@@ -1,4 +1,7 @@
+import json
+
 import requests
+from factory.bank_account import BankAccountFactory
 
 base_url = "http://localhost:3001"
 
@@ -7,7 +10,12 @@ def make_request(session, url, payload, request_type):
     if request_type == "GET":
         response = session.get(url, params=payload)
     elif request_type == "POST":
-        response = session.post(url, data=payload)
+        if url.endswith("/graphql"):
+            response = session.post(
+                url, headers={"Content-Type": "application/json"}, data=payload
+            )
+        else:
+            response = session.post(url, data=payload)
     elif request_type == "PUT":
         response = session.put(url, data=payload)
     elif request_type == "DELETE":
@@ -74,3 +82,16 @@ def execute_transaction(session, request_status, transaction_id):
         execute_transaction_payload,
         "PATCH",
     )
+
+
+def create_new_bank_account(session, user_id):
+    factory = BankAccountFactory()
+    bank_account = factory.create_bank_account()
+    mutation = factory.create_mutation.copy()
+    mutation["variables"]["bankName"] = bank_account.bank_name
+    mutation["variables"]["userId"] = user_id
+    mutation["variables"]["routingNumber"] = str(bank_account.routing_number)
+    mutation["variables"]["accountNumber"] = str(bank_account.account_number)
+    make_request(session, f"{base_url}/graphql", json.dumps(mutation), "POST")
+
+    return bank_account

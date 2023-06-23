@@ -15,8 +15,37 @@ class BankAccountFactory:
     def __init__(self):
         self.faker = Faker()
 
-    def create_account(self):
+    def create_bank_account(self):
         bank_name = self.faker.company()
         routing_number = self.faker.random_number(digits=9)
         account_number = self.faker.random_number(digits=10)
         return BankAccount(bank_name, routing_number, account_number)
+
+    # Mutation for creating the bank account
+    create_mutation = {
+        "operationName": "CreateBankAccount",
+        "query": """
+        mutation CreateBankAccount($bankName: String!, $accountNumber: String!, $routingNumber: String!) {
+            createBankAccount(
+            bankName: $bankName
+            accountNumber: $accountNumber
+            routingNumber: $routingNumber
+            ) {
+            id
+            uuid
+            userId
+            bankName
+            accountNumber
+            routingNumber
+            isDeleted
+            createdAt
+            }
+        }
+        """,
+        "variables": {
+            "userId": "test",
+            "bankName": "test",
+            "accountNumber": "test",
+            "routingNumber": "test",
+        },
+    }
