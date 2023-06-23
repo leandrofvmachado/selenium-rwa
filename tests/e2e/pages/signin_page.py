@@ -28,6 +28,9 @@ class SignInPage(BasePage):
         self.click_on(self.signup_link_locator)
 
     def login(self, username, password):
+        if not self.driver.current_url == f"{pytest.url}/signin":
+            self.go_to_signin_page()  # TODO: refactor this after
+
         self.find_element(self.username_locator).send_keys(username)
         self.find_element(self.password_locator).send_keys(password)
         self.find_element(self.login_button_locator).click()
