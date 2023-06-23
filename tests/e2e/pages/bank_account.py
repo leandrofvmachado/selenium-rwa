@@ -55,8 +55,19 @@ class BankAccountPage(BasePage):
         )
         return len(bank_account_list)
 
-    def get_recently_created_bank_account(self):
+    def get_recently_created_bank_account_text(self):
         bank_account_list = self.get_child_elements(
             self.bank_account_list_locator, self.bank_account_list_item_xpath
         )
-        return bank_account_list[-1].find_element(By.TAG_NAME, "p")
+        return bank_account_list[-1].find_element(By.TAG_NAME, "p").text
+
+    def get_recently_created_bank_account_delete_button(self):
+        bank_account_list = self.get_child_elements(
+            self.bank_account_list_locator, self.bank_account_list_item_xpath
+        )
+        return bank_account_list[-1].find_element(By.TAG_NAME, "button")
+
+    def delete_bank_account(self, bank_account):
+        bank_account = self.get_recently_created_bank_account_delete_button()
+        bank_account.click()
+        self.driver.refresh()
