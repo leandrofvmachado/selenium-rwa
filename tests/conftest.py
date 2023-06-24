@@ -22,7 +22,7 @@ fake = Faker()
 @pytest.fixture(autouse=True, scope="function")
 def driver():
     chrome_options = Options()
-    # chrome_options.add_argument("--headless")
+    chrome_options.add_argument("--headless")
     chrome_options.add_argument("--start-maximized")
     driver = webdriver.Chrome(
         service=ChromeService(ChromeDriverManager().install()), options=chrome_options
