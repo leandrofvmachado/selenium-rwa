@@ -19,9 +19,7 @@ def bank_account():
     return created_bank_account
 
 
-def test_dismiss_single_last_notification(
-    driver, request_payment, user, home_page
-):
+def test_dismiss_single_last_notification(driver, request_payment, user, home_page):
     sign_in_page = SignInPage(driver)
     sign_in_page.login(user["username"], user["password"])
 

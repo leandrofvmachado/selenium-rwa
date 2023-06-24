@@ -22,7 +22,7 @@ fake = Faker()
 @pytest.fixture(autouse=True, scope="function")
 def driver():
     chrome_options = Options()
-    chrome_options.add_argument("--headless")
+    # chrome_options.add_argument("--headless")
     chrome_options.add_argument("--start-maximized")
     driver = webdriver.Chrome(
         service=ChromeService(ChromeDriverManager().install()), options=chrome_options
@@ -69,6 +69,12 @@ def user():
     user_data.update({"id": response["user"]["id"]})
 
     return user_data
+
+
+@pytest.fixture
+def logged_in_user(driver, user):
+    sign_in_page = SignInPage(driver)
+    sign_in_page.login(user["username"], user["password"])
 
 
 def is_balance_adjusted(old_balance, new_balance, amount, home_page):

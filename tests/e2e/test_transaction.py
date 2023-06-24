@@ -8,8 +8,7 @@ from e2e.pages.transaction_page import TransactionPage
 
 
 @pytest.fixture
-def new_transaction_page(driver, logged_in_home_page):
-    logged_in_home_page.go_to_new_transaction()
+def new_transaction_page(driver):
     new_transaction_page = TransactionPage(driver)
     return new_transaction_page
 
@@ -45,40 +44,46 @@ def payment_request_charged():
 
 
 @pytest.fixture
-def transaction_page(driver, logged_in_home_page):
+def transaction_page(driver):
     return TransactionPage(driver)
 
 
-def test_create_new_payment_transaction(new_transaction_page, home_page):
+def test_create_new_payment_transaction(new_transaction_page, logged_in_home_page):
     amount = 50
-    old_balance = home_page.get_balance()
+    old_balance = logged_in_home_page.get_balance()
     receiver = "Ibrahim Dickens"
 
-    home_page = new_transaction_page.make_a_transaction(receiver, amount)
-    new_balance = home_page.get_balance()
+    logged_in_home_page.go_to_new_transaction()
+    new_transaction_page.make_a_transaction(receiver, amount)
+    new_balance = logged_in_home_page.get_balance()
 
     (
         sender_on_screen,
         receiver_on_screen,
         action_on_screen,
         amount_on_screen,
-    ) = home_page.get_transaction_info_on_personal_list()
-    assert home_page.is_in_home_page()
-    assert is_balance_adjusted(old_balance, new_balance, Decimal(amount), home_page)
+    ) = logged_in_home_page.get_transaction_info_on_personal_list()
+    assert logged_in_home_page.is_in_home_page()
+    assert is_balance_adjusted(
+        old_balance, new_balance, Decimal(amount), logged_in_home_page
+    )
 
-    assert home_page.is_in_home_page()
+    assert logged_in_home_page.is_in_home_page()
     assert sender_on_screen == "Edgar Johns"
     assert receiver_on_screen == receiver
     assert action_on_screen == "paid"
     assert amount_on_screen == f"-${amount}.00"
 
 
-def test_create_new_request_transaction(new_transaction_page, transaction_page):
+def test_create_new_request_transaction(
+    transaction_page, home_page, logged_in_user, user
+):
     amount = 50
     receiver = "Ibrahim Dickens"
     note = "selenium_automation"
 
-    home_page = new_transaction_page.place_a_request(receiver, note, amount)
+    home_page.go_to_new_transaction()
+    transaction_page.place_a_request(receiver, note, amount)
     home_page.access_last_personal_transaction()
     (
         sender_on_screen,
@@ -88,7 +93,7 @@ def test_create_new_request_transaction(new_transaction_page, transaction_page):
         description_on_screen,
     ) = transaction_page.get_transaction_info()
 
-    assert sender_on_screen == "Edgar Johns"
+    assert sender_on_screen == f"{user['firstName']} {user['lastName']}"
     assert receiver_on_screen == receiver
     assert action_on_screen == "requested"
     assert amount_on_screen == f"+${amount}.00"
@@ -113,7 +118,7 @@ def test_check_request_paid(logged_in_home_page, payment_request_charged):
     assert amount_on_screen == f"+${amount_requested}.00"
 
 
-def test_accept_a_request(home_page, transaction_page, payment_request_requested):
+def test_accept_a_request(home_page, transaction_page, logged_in_user, request_payment):
     home_page.access_last_personal_transaction()
     transaction_page.accept_a_request()
 
@@ -122,7 +127,7 @@ def test_accept_a_request(home_page, transaction_page, payment_request_requested
         description_requested,
         receiver_id_requested,
         sender_id_requested,
-    ) = payment_request_requested
+    ) = request_payment
     (
         sender_on_screen,
         receiver_on_screen,
@@ -135,7 +140,7 @@ def test_accept_a_request(home_page, transaction_page, payment_request_requested
     assert description_on_screen == description_requested
 
 
-def test_deny_request(home_page, transaction_page, payment_request_requested):
+def test_deny_request(home_page, transaction_page, logged_in_user, request_payment):
     home_page.access_last_personal_transaction()
     transaction_page.reject_a_request()
 
@@ -144,7 +149,7 @@ def test_deny_request(home_page, transaction_page, payment_request_requested):
         description_requested,
         receiver_id_requested,
         sender_id_requested,
-    ) = payment_request_requested
+    ) = request_payment
 
     (
         sender_on_screen,
@@ -157,3 +162,18 @@ def test_deny_request(home_page, transaction_page, payment_request_requested):
     assert action_on_screen == "requested"
     assert amount_on_screen == f"+${amount_requested}.00"
     assert description_on_screen == description_requested
+
+
+def test_check_like_and_comment_on_transaction_detail(
+    request_payment, logged_in_user, home_page, transaction_page
+):
+    home_page.access_last_personal_transaction()
+    old_number_of_likes = transaction_page.get_number_of_likes()
+    old_number_of_comments = 0
+    comment = transaction_page.like_and_comment_transaction()
+    new_number_of_likes = transaction_page.get_number_of_likes()
+    new_number_of_comments = transaction_page.get_number_of_comments()
+
+    assert new_number_of_likes == old_number_of_likes + 1
+    assert new_number_of_comments == old_number_of_comments + 1
+    assert transaction_page.check_comment_visibility(comment)
