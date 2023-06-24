@@ -1,7 +1,13 @@
+import re
+
 import pytest
+from faker import Faker
 from pages.base_page import BasePage
 from pages.home_page import HomePage
+from selenium.common.exceptions import WebDriverException
 from selenium.webdriver.common.by import By
+
+fake = Faker()
 
 
 class TransactionPage(BasePage):
@@ -61,6 +67,20 @@ class TransactionPage(BasePage):
         By.XPATH,
         '//*[starts-with(@data-test, "transaction-description")]',
     )
+    transaction_like_button_locator = (
+        By.XPATH,
+        '//*[starts-with(@data-test, "transaction-like-button")]',
+    )
+    transaction_like_count_label_locator = (
+        By.XPATH,
+        '//*[starts-with(@data-test, "transaction-like-count")]',
+    )
+    transaction_comment_input_locator = (
+        By.XPATH,
+        '//*[starts-with(@data-test, "transaction-comment-input")]',
+    )
+    comment_list_locator = (By.CSS_SELECTOR, '[data-test="comments-list"]')
+    comment_list_item_xpath = '//li[starts-with(@data-test, "comment-list-item")]'
 
     # paid 50 for a,
     # User journey methods
@@ -122,3 +142,29 @@ class TransactionPage(BasePage):
         amount = self.find_element(self.transaction_amount_locator).text
         description = self.find_element(self.transaction_description_locator).text
         return sender, receiver, action, amount, description
+
+    def like_and_comment_transaction(self):
+        comment = fake.text(max_nb_chars=20)
+        if not re.match(f"{pytest.url}/transaction/*", self.driver.current_url):
+            raise WebDriverException(
+                f"Page expected: {pytest.url}/transaction/*, actual page: {self.driver.current_url}"
+            )
+
+        self.find_element(self.transaction_like_button_locator).click()
+        self.find_element(self.transaction_comment_input_locator).send_keys(
+            comment + "\n"
+        )
+        return comment
+
+    def get_number_of_likes(self):
+        return int(self.find_element(self.transaction_like_count_label_locator).text)
+
+    def get_number_of_comments(self):
+        return len(
+            self.get_child_elements(
+                self.comment_list_locator, self.comment_list_item_xpath
+            )
+        )
+
+    def check_comment_visibility(self, comment):
+        return self.check_if_text_exists_in_list(self.comment_list_locator, comment)

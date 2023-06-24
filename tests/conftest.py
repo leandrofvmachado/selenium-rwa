@@ -71,6 +71,12 @@ def user():
     return user_data
 
 
+@pytest.fixture
+def logged_in_user(driver, user):
+    sign_in_page = SignInPage(driver)
+    sign_in_page.login(user["username"], user["password"])
+
+
 def is_balance_adjusted(old_balance, new_balance, amount, home_page):
     max_time = 10
     iterator = 0
