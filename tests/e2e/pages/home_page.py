@@ -1,3 +1,4 @@
+from datetime import date
 from decimal import Decimal
 
 import pytest
@@ -45,6 +46,18 @@ class HomePage(BasePage):
     top_notifications_link_locator = (
         By.CSS_SELECTOR,
         '[data-test="nav-top-notifications-link"]',
+    )
+    amount_filter_slider_locator = (
+        By.CSS_SELECTOR,
+        '[data-test="transaction-list-filter-amount-range-slider"]',
+    )
+    amount_filter_button_locator = (
+        By.CSS_SELECTOR,
+        '[data-test="transaction-list-filter-amount-range-button"]',
+    )
+    date_picker_button_locator = (
+        By.CSS_SELECTOR,
+        '[data-test="transaction-list-filter-date-range-button"]',
     )
 
     # User journey methods
@@ -106,3 +119,10 @@ class HomePage(BasePage):
     def get_number_of_notifications(self):
         if self.is_in_home_page():
             return int(self.find_element(self.top_notifications_link_locator).text)
+
+    def set_today_date(self):
+        self.find_element(self.date_picker_button_locator).click()
+        today_date = date.today().strftime("%Y-%m-%d")
+        today_date_xpath = (By.XPATH, f'//*[starts-with(@data-date, "{today_date}")]')
+        self.find_element(today_date_xpath).click()
+        self.find_element(today_date_xpath).click()
