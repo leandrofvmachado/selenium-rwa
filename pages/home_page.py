@@ -2,10 +2,11 @@ from datetime import date
 from decimal import Decimal
 
 import pytest
-from e2e.pages.bank_account import BankAccountPage
-from e2e.pages.base_page import BasePage
-from e2e.pages.notification_page import NotificationPage
 from selenium.webdriver.common.by import By
+
+from pages.bank_account import BankAccountPage
+from pages.base_page import BasePage
+from pages.notification_page import NotificationPage
 
 
 @pytest.fixture

@@ -1,4 +1,5 @@
 import pytest
+
 from pages.signup_page import SignUpPage
 
 

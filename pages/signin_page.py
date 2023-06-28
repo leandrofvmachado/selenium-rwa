@@ -1,7 +1,8 @@
 import pytest
-from e2e.pages.base_page import BasePage
-from e2e.pages.home_page import HomePage
 from selenium.webdriver.common.by import By
+
+from pages.base_page import BasePage
+from pages.home_page import HomePage
 
 
 class SignInPage(BasePage):
