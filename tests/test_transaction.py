@@ -94,7 +94,7 @@ def test_create_new_request_transaction(transaction_page, home_page, new_user):
     ).to_dict()
 
     home_page.go_to_new_transaction()
-    transaction_page.place_a_request(transaction, receiver_user)
+    transaction_page.place_a_transaction(transaction, receiver_user)
     home_page.access_last_personal_transaction()
     (
         sender_on_screen,
