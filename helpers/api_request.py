@@ -1,6 +1,7 @@
 import json
 
 import requests
+
 from factory.bank_account_factory import BankAccountFactory
 
 base_url = "http://localhost:3001"
@@ -56,17 +57,14 @@ def logout(session):
     return response.json()
 
 
-def make_new_transaction(
-    session, amount, transaction_type, note, receiver_id, sender_id
-):
+def make_new_transaction(session, transaction):
     new_transaction_payload = {
-        "amount": amount,
-        "transactionType": transaction_type,
-        "description": note,
-        "receiverId": receiver_id,
-        "senderId": sender_id,
+        "amount": transaction["amount"],
+        "transactionType": transaction["type"],
+        "description": transaction["description"],
+        "receiverId": transaction["receiver_id"],
+        "senderId": transaction["sender_id"],
     }
-
     response = make_request(
         session, f"{base_url}/transactions", new_transaction_payload, "POST"
     )

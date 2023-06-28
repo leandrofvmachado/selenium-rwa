@@ -3,9 +3,6 @@ import time
 
 import pytest
 from _pytest.config import hookimpl
-from e2e.helpers.api_request import *
-from e2e.pages.signin_page import SignInPage
-from factory.user_factory import UserFactory
 from faker import Faker
 from py.xml import html
 from selenium import webdriver
@@ -13,6 +10,11 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium.webdriver.remote.remote_connection import LOGGER
 from webdriver_manager.chrome import ChromeDriverManager
+
+from factory.transaction_factory import TransactionFactory
+from factory.user_factory import UserFactory
+from helpers.api_request import *
+from pages.signin_page import SignInPage
 
 LOGGER.setLevel(logging.WARNING)
 logging.getLogger("faker.factory").setLevel(logging.ERROR)
@@ -45,36 +47,50 @@ def logged_in_home_page(driver):
 
 
 @pytest.fixture
-def request_payment(user):
-    amount = 50
-    description = "selenium_automation"
+def request_transaction(new_user):
+    transaction_factory = TransactionFactory()
+    sender_user = UserFactory.users["Katharina_Bernier"].to_dict()
+    receiver_id = new_user["id"]
+    type = "request"
+
+    transaction = transaction_factory.create_transaction(
+        type, sender_user["id"], receiver_id
+    ).to_dict()
+
+    session = login(sender_user["username"], sender_user["password"])
+    make_new_transaction(session, transaction)
+    return transaction, sender_user
+
+
+def add_balance(session, user):
+    transaction_factory = TransactionFactory()
+    sender_user = UserFactory.users["Katharina_Bernier"].to_dict()
     receiver_id = user["id"]
-    sender_id = "24VniajY1y"
+    type = "payment"
 
-    session = login("Giovanna74", "s3cret")
-    make_new_transaction(
-        session, amount, "request", description, receiver_id, sender_id
+    transaction = transaction_factory.create_transaction(
+        type, sender_user["id"], receiver_id
     )
-    return amount, description, receiver_id, sender_id
+    transaction.set_amount(50)
+    transaction = transaction.to_dict()
+
+    session = login(sender_user["username"], sender_user["password"])
+    make_new_transaction(session, transaction)
+    return transaction, sender_user
 
 
 @pytest.fixture
-def user():
+def new_user():
     user_factory = UserFactory()
-    user_data = user_factory.get_user_data()
+    user = user_factory.create_user()
 
-    response = signup(user_data)
-    session = login(user_data["username"], user_data["password"])
+    response = signup(user.to_signup_dict())
+    session = login(user.to_dict()["username"], user.to_dict()["password"])
+    user.set_id(response["user"]["id"])
     create_new_bank_account(session, response["user"]["id"])
-    user_data.update({"id": response["user"]["id"]})
+    add_balance(session, user.to_dict())
 
-    return user_data
-
-
-@pytest.fixture
-def logged_in_user(driver, user):
-    sign_in_page = SignInPage(driver)
-    sign_in_page.login(user["username"], user["password"])
+    return user.to_dict()
 
 
 def is_balance_adjusted(old_balance, new_balance, amount, home_page):

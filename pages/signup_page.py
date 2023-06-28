@@ -1,7 +1,8 @@
-from conftest import create_signup_data
-from e2e.pages.signin_page import SignInPage
-from pages.base_page import BasePage
 from selenium.webdriver.common.by import By
+
+from conftest import create_signup_data
+from pages.base_page import BasePage
+from pages.signin_page import SignInPage
 
 
 class SignUpPage(BasePage):

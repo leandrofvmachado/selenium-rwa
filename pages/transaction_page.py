@@ -2,10 +2,11 @@ import re
 
 import pytest
 from faker import Faker
-from pages.base_page import BasePage
-from pages.home_page import HomePage
 from selenium.common.exceptions import WebDriverException
 from selenium.webdriver.common.by import By
+
+from pages.base_page import BasePage
+from pages.home_page import HomePage
 
 fake = Faker()
 
@@ -82,37 +83,30 @@ class TransactionPage(BasePage):
     comment_list_locator = (By.CSS_SELECTOR, '[data-test="comments-list"]')
     comment_list_item_xpath = '//li[starts-with(@data-test, "comment-list-item")]'
 
-    # paid 50 for a,
     # User journey methods
-    def make_a_transaction(self, receiver_name, amount=50):
+    def place_a_transaction(self, transaction, receiver_user):
+        receiver_name = f"{receiver_user['first_name'] } {receiver_user['last_name']}"
         self.find_element(self.search_input_locator).send_keys(receiver_name)
         self.wait_until_list_is_loaded_correctly(
             self.user_list_locator, self.child_user_list_locator, receiver_name
         )
         self.find_element(self.user_list_locator).click()
-        self.find_element(self.amount_input_locator).send_keys(amount)
+        self.find_element(self.amount_input_locator).send_keys(transaction["amount"])
         self.find_element(self.add_a_note_input_locator).send_keys(
-            "selenium automation"
+            transaction["description"]
         )
-        self.find_element(self.payment_button_locator).click()
-        self.find_element(self.return_to_transactions_button_locator).click()
-        home_page = HomePage(self.driver)
-        # TODO check text send 50 for a selenium automation
-        # TODO go in mine tab and check the transaction is there
-        return home_page
 
-    def place_a_request(self, receiver_name, note, amount=50):
-        self.find_element(self.search_input_locator).send_keys(receiver_name)
-        self.wait_until_list_is_loaded_correctly(
-            self.user_list_locator, self.child_user_list_locator, receiver_name
-        )
-        self.find_element(self.user_list_locator).click()
-        self.find_element(self.amount_input_locator).send_keys(amount)
-        self.find_element(self.add_a_note_input_locator).send_keys(note)
-        self.find_element(self.request_button_locator).click()
-        assert self.find_element(
-            (By.XPATH, "//*[contains(text(), '{}')]".format(f"Requested"))
-        )
+        if transaction["type"] == "payment":
+            self.find_element(self.payment_button_locator).click()
+            assert self.find_element(
+                (By.XPATH, "//*[contains(text(), '{}')]".format(f"Paid"))
+            )
+        elif transaction["type"] == "request":
+            self.find_element(self.request_button_locator).click()
+            assert self.find_element(
+                (By.XPATH, "//*[contains(text(), '{}')]".format(f"Requested"))
+            )
+
         self.find_element(self.return_to_transactions_button_locator).click()
         home_page = HomePage(self.driver)
         return home_page
