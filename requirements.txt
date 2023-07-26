@@ -9,5 +9,5 @@ black
 unimport
 isort
 pytest-repeat
-webdriver-manager
+webdriver-manager==3.9.1
 faker

@@ -85,7 +85,8 @@ def test_create_new_payment_transaction(transaction_page, home_page, new_user):
 
 
 def test_create_new_request_transaction(transaction_page, home_page, new_user):
-    transaction_factory = TransactionFactory()
+    old_balance = home_page.get_balance()
+    transaction_factory = TransactionFactory() #TODO: put this into a fixture
     receiver_user = UserFactory.users["Giovanna74"].to_dict()
     receiver_id = receiver_user["id"]
     type = "request"
@@ -95,6 +96,7 @@ def test_create_new_request_transaction(transaction_page, home_page, new_user):
 
     home_page.go_to_new_transaction()
     transaction_page.place_a_transaction(transaction, receiver_user)
+    new_balance = home_page.get_balance()
     home_page.access_last_personal_transaction()
     (
         sender_on_screen,
@@ -104,6 +106,9 @@ def test_create_new_request_transaction(transaction_page, home_page, new_user):
         description_on_screen,
     ) = transaction_page.get_transaction_info()
 
+    assert is_balance_adjusted(
+        old_balance, new_balance, Decimal(0.0), home_page
+    )
     assert sender_on_screen == f"{new_user['first_name']} {new_user['last_name']}"
     assert (
         receiver_on_screen
