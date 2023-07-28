@@ -60,7 +60,8 @@ def test_create_new_payment_transaction(transaction_page, home_page, new_user):
     transaction_page.place_a_transaction(transaction, receiver_user)
     new_balance = home_page.get_balance()
 
-    home_page.access_last_personal_transaction()
+    home_page.go_to_personal_transactions()
+    transaction_page.access_last_personal_transaction()
     (
         sender_on_screen,
         receiver_on_screen,
@@ -97,7 +98,8 @@ def test_create_new_request_transaction(transaction_page, home_page, new_user):
     home_page.go_to_new_transaction()
     transaction_page.place_a_transaction(transaction, receiver_user)
     new_balance = home_page.get_balance()
-    home_page.access_last_personal_transaction()
+    home_page.go_to_personal_transactions()
+    transaction_page.access_last_personal_transaction()
     (
         sender_on_screen,
         receiver_on_screen,
@@ -119,18 +121,19 @@ def test_create_new_request_transaction(transaction_page, home_page, new_user):
     assert description_on_screen == transaction["description"]
 
 
-def test_check_request_paid(charged_transaction, new_user, home_page):
+def test_check_request_paid(charged_transaction, new_user, home_page, transaction_page):
     """
     Test that check the feature of receiving money after making a request.
     The transaction is placed using the API. Both the request and the payment.
     """
     transaction, sender = charged_transaction
+    home_page.go_to_personal_transactions()
     (
         sender_on_screen,
         receiver_on_screen,
         action_on_screen,
         amount_on_screen,
-    ) = home_page.get_transaction_info_on_personal_list()
+    ) = transaction_page.get_transaction_info_on_personal_list()
 
     assert sender_on_screen == f'{sender["first_name"]} {sender["last_name"]}'
     assert receiver_on_screen == f'{new_user["first_name"]} {new_user["last_name"]}'
@@ -144,9 +147,9 @@ def test_accept_request(home_page, transaction_page, request_transaction, new_us
     The transaction is placed using the API.
     """
     transaction, sender = request_transaction
-    home_page.access_last_personal_transaction()
+    home_page.go_to_personal_transactions()
+    transaction_page.access_last_personal_transaction()
     transaction_page.accept_a_request()
-
     (
         sender_on_screen,
         receiver_on_screen,
@@ -168,7 +171,8 @@ def test_reject_request(home_page, transaction_page, request_transaction, new_us
     The transaction is placed using the API.
     """
     transaction, sender = request_transaction
-    home_page.access_last_personal_transaction()
+    home_page.go_to_personal_transactions()
+    transaction_page.access_last_personal_transaction()
     transaction_page.reject_a_request()
 
     (
@@ -187,13 +191,13 @@ def test_reject_request(home_page, transaction_page, request_transaction, new_us
 
 
 def test_check_like_and_comment_on_transaction_detail(
-    request_transaction, home_page, transaction_page
+    home_page, transaction_page
 ):
     """
     Test the like and comment on a transaction.
     The transaction is placed using the API.
     """
-    home_page.access_last_personal_transaction()
+    transaction_page.access_last_personal_transaction()
     old_number_of_likes = transaction_page.get_number_of_likes()
     old_number_of_comments = 0
     comment = transaction_page.like_and_comment_transaction()
@@ -205,7 +209,7 @@ def test_check_like_and_comment_on_transaction_detail(
     assert transaction_page.check_comment_visibility(comment)
 
 
-def test_date_filter(home_page, new_user, request_transaction):
+def test_date_filter(home_page, transaction_page, new_user, request_transaction):
     home_page.set_today_date()
     transaction, sender = request_transaction
     (
@@ -213,7 +217,7 @@ def test_date_filter(home_page, new_user, request_transaction):
         receiver_on_screen,
         action_on_screen,
         amount_on_screen,
-    ) = home_page.get_transaction_info_on_personal_list()
+    ) = transaction_page.get_transaction_info_on_personal_list()
 
     assert sender_on_screen == f'{sender["first_name"]} {sender["last_name"]}'
     assert receiver_on_screen == f'{new_user["first_name"]} {new_user["last_name"]}'
