@@ -82,6 +82,22 @@ class TransactionPage(BasePage):
     )
     comment_list_locator = (By.CSS_SELECTOR, '[data-test="comments-list"]')
     comment_list_item_xpath = '//li[starts-with(@data-test, "comment-list-item")]'
+    transaction_list_locator = (By.CSS_SELECTOR, '[data-test="transaction-list"]')
+    transaction_list_elements_xpath = (
+        '//li[starts-with(@data-test, "transaction-item")]'
+    )
+    transaction_list_element_sender_xpath = (
+        '//*[starts-with(@data-test, "transaction-sender")]'
+    )
+    transaction_list_element_action_xpath = (
+        '//*[starts-with(@data-test, "transaction-action")]'
+    )
+    transaction_list_element_receiver_xpath = (
+        '//*[starts-with(@data-test, "transaction-receiver")]'
+    )
+    transaction_list_element_amount_xpath = (
+        '//*[starts-with(@data-test, "transaction-amount")]'
+    )
 
     # User journey methods
     def place_a_transaction(self, transaction, receiver_user):
@@ -110,6 +126,31 @@ class TransactionPage(BasePage):
         self.find_element(self.return_to_transactions_button_locator).click()
         home_page = HomePage(self.driver)
         return home_page
+
+    def access_last_personal_transaction(self):
+        personal_transactions_list = self.get_child_elements(
+            self.transaction_list_locator, self.transaction_list_elements_xpath
+        )
+        personal_transactions_list[0].click()
+
+    def get_transaction_info_on_personal_list(self):
+        personal_transactions_list = self.get_child_elements(
+            self.transaction_list_locator, self.transaction_list_elements_xpath
+        )
+
+        sender_on_screen = self.find_element_in_element(
+            personal_transactions_list[0], self.transaction_list_element_sender_xpath
+        ).text
+        receiver_on_screen = self.find_element_in_element(
+            personal_transactions_list[0], self.transaction_list_element_receiver_xpath
+        ).text
+        action_on_screen = self.find_element_in_element(
+            personal_transactions_list[0], self.transaction_list_element_action_xpath
+        ).text
+        amount_on_screen = self.find_element_in_element(
+            personal_transactions_list[0], self.transaction_list_element_amount_xpath
+        ).text
+        return sender_on_screen, receiver_on_screen, action_on_screen, amount_on_screen
 
     def is_in_new_transaction_page(self):
         self.check_url(pytest.url + "/transaction/new")
